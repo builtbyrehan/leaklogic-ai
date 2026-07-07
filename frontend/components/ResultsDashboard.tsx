@@ -1,181 +1,256 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
-import { AnalysisResult, Finding } from "@/types";
 import {
-  TrendingDown,
-  DollarSign,
   AlertTriangle,
+  Boxes,
   ChevronDown,
   ChevronUp,
+  CircleDollarSign,
   Download,
+  Factory,
+  Percent,
+  Receipt,
+  ShieldCheck,
+  TrendingDown,
 } from "lucide-react";
+import { AnalysisResult } from "@/types";
 import LeakCard from "./LeakCard";
 
 interface ResultsDashboardProps {
   result: AnalysisResult;
 }
 
-export default function ResultsDashboard({ result }: ResultsDashboardProps) {
+const categoryStyles: Record<string, string> = {
+  refund: "border-rose-400/20 bg-rose-400/10 text-rose-300",
+  discount: "border-amber-400/20 bg-amber-400/10 text-amber-300",
+  supplier: "border-violet-400/20 bg-violet-400/10 text-violet-300",
+  inventory: "border-blue-400/20 bg-blue-400/10 text-blue-300",
+};
+
+function CategoryIcon({ category }: { category: string }) {
+  const iconClass = "h-5 w-5";
+
+  switch (category.toLowerCase()) {
+    case "refund":
+      return <Receipt className={iconClass} />;
+    case "discount":
+      return <Percent className={iconClass} />;
+    case "supplier":
+      return <Factory className={iconClass} />;
+    case "inventory":
+      return <Boxes className={iconClass} />;
+    default:
+      return <AlertTriangle className={iconClass} />;
+  }
+}
+
+export default function ResultsDashboard({
+  result,
+}: ResultsDashboardProps) {
   const [expandedLeak, setExpandedLeak] = useState<number | null>(0);
 
+  const averageConfidence =
+    result.findings.length > 0
+      ? result.findings.reduce(
+          (total, finding) => total + finding.confidence,
+          0
+        ) / result.findings.length
+      : 0;
+
   const toggleLeak = (index: number) => {
-    setExpandedLeak(expandedLeak === index ? null : index);
+    setExpandedLeak((current) => (current === index ? null : index));
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category.toLowerCase()) {
-      case "refund":
-        return "text-red-600 bg-red-50 border-red-200";
-      case "discount":
-        return "text-orange-600 bg-orange-50 border-orange-200";
-      case "supplier":
-        return "text-purple-600 bg-purple-50 border-purple-200";
-      case "inventory":
-        return "text-blue-600 bg-blue-50 border-blue-200";
-      default:
-        return "text-slate-600 bg-slate-50 border-slate-200";
-    }
-  };
-
-  const getCategoryIcon = (category: string) => {
-    return "💰";
-  };
-
-  const handleExportPDF = () => {
-    // TODO: Implement PDF export
-    alert("PDF export coming soon!");
+  const handleExport = () => {
+    window.print();
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* Summary Section */}
-      <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-xl shadow-xl p-8 mb-8 text-white">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">Analysis Complete</h2>
-            <p className="text-red-100">{result.executive_summary}</p>
-          </div>
-          <button
-            onClick={handleExportPDF}
-            className="bg-white text-red-600 px-4 py-2 rounded-lg font-medium hover:bg-red-50 transition-colors flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            Export PDF
-          </button>
-        </div>
+    <div className="mx-auto max-w-6xl">
+      <section className="relative overflow-hidden rounded-3xl border border-rose-400/20 bg-gradient-to-br from-rose-500/20 via-slate-900 to-slate-950 p-6 shadow-2xl shadow-black/30 sm:p-8">
+        <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-rose-500/20 blur-3xl" />
 
-        <div className="grid md:grid-cols-3 gap-6 mt-8">
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="bg-white/20 p-2 rounded-lg">
-                <TrendingDown className="w-6 h-6" />
+        <div className="relative">
+          <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-start">
+            <div className="max-w-3xl">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-xs font-medium text-emerald-300">
+                <ShieldCheck className="h-4 w-4" />
+                Analysis complete
               </div>
-              <div>
-                <p className="text-red-100 text-sm">Total Leaks Detected</p>
-                <p className="text-3xl font-bold">{result.findings.length}</p>
-              </div>
+
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Profit leak report
+              </h2>
+
+              <p className="mt-4 text-sm leading-7 text-slate-300 sm:text-base">
+                {result.executive_summary}
+              </p>
             </div>
-          </div>
 
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="bg-white/20 p-2 rounded-lg">
-                <DollarSign className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-red-100 text-sm">Estimated Impact</p>
-                <p className="text-3xl font-bold">
-                  ${Math.abs(result.total_estimated_leak).toLocaleString()}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="bg-white/20 p-2 rounded-lg">
-                <AlertTriangle className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-red-100 text-sm">Avg Confidence</p>
-                <p className="text-3xl font-bold">
-                  {(
-                    (result.findings.reduce((acc, f) => acc + f.confidence, 0) /
-                      result.findings.length) *
-                    100
-                  ).toFixed(0)}
-                  %
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Findings Section */}
-      <div className="mb-8">
-        <h3 className="text-2xl font-bold text-slate-900 mb-6">
-          Profit Leaks (Ranked by Impact)
-        </h3>
-
-        <div className="space-y-4">
-          {result.findings.map((finding, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl shadow-md overflow-hidden border-2 border-slate-200 hover:border-blue-300 transition-all"
+            <button
+              onClick={handleExport}
+              className="flex shrink-0 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15"
             >
-              {/* Leak Header */}
-              <button
-                onClick={() => toggleLeak(index)}
-                className="w-full p-6 flex items-start justify-between hover:bg-slate-50 transition-colors"
-              >
-                <div className="flex items-start gap-4 flex-1 text-left">
-                  <div className="text-3xl">{getCategoryIcon(finding.category)}</div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold border ${getCategoryColor(
-                          finding.category
-                        )}`}
-                      >
-                        {finding.category.toUpperCase()}
-                      </span>
-                      <span className="text-sm text-slate-600">
-                        Confidence: {(finding.confidence * 100).toFixed(0)}%
-                      </span>
-                    </div>
-                    <h4 className="text-xl font-bold text-slate-900 mb-1">
-                      {finding.title}
-                    </h4>
-                    <p className="text-slate-600 font-medium">
-                      {finding.entity}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-slate-600 mb-1">Impact</p>
-                    <p className="text-2xl font-bold text-red-600">
-                      -${Math.abs(finding.dollar_impact).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-                <div className="ml-4">
-                  {expandedLeak === index ? (
-                    <ChevronUp className="w-6 h-6 text-slate-400" />
-                  ) : (
-                    <ChevronDown className="w-6 h-6 text-slate-400" />
-                  )}
-                </div>
-              </button>
+              <Download className="h-4 w-4" />
+              Print report
+            </button>
+          </div>
 
-              {/* Expanded Details */}
-              {expandedLeak === index && (
-                <LeakCard finding={finding} />
-              )}
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-rose-400/10 p-2.5 text-rose-300">
+                  <TrendingDown className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Leaks detected
+                  </p>
+                  <p className="mt-1 text-3xl font-bold text-white">
+                    {result.findings.length}
+                  </p>
+                </div>
+              </div>
             </div>
-          ))}
+
+            <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-amber-400/10 p-2.5 text-amber-300">
+                  <CircleDollarSign className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Estimated impact
+                  </p>
+                  <p className="mt-1 text-3xl font-bold text-white">
+                    ${Math.abs(
+                      result.total_estimated_leak
+                    ).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-blue-400/10 p-2.5 text-blue-300">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Average confidence
+                  </p>
+                  <p className="mt-1 text-3xl font-bold text-white">
+                    {(averageConfidence * 100).toFixed(0)}%
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section className="mt-10">
+        <div className="mb-5 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-sm font-medium text-blue-300">
+              Ranked by financial impact
+            </p>
+            <h3 className="mt-1 text-2xl font-bold text-white">
+              Detected profit leaks
+            </h3>
+          </div>
+
+          <p className="text-sm text-slate-500">
+            Select a finding to view evidence and recommended action
+          </p>
+        </div>
+
+        {result.findings.length === 0 ? (
+          <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-8 text-center">
+            <ShieldCheck className="mx-auto h-10 w-10 text-emerald-300" />
+            <h4 className="mt-4 text-lg font-semibold text-white">
+              No major leaks detected
+            </h4>
+            <p className="mt-2 text-sm text-slate-400">
+              The uploaded files did not contain any high-priority findings.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {result.findings.map((finding, index) => {
+              const category = finding.category.toLowerCase();
+              const categoryStyle =
+                categoryStyles[category] ||
+                "border-slate-400/20 bg-slate-400/10 text-slate-300";
+
+              return (
+                <article
+                  key={`${finding.category}-${finding.entity}-${index}`}
+                  className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] transition hover:border-white/20"
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleLeak(index)}
+                    className="flex w-full items-start gap-4 p-5 text-left transition hover:bg-white/[0.03] sm:p-6"
+                  >
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/5 text-slate-300">
+                      <CategoryIcon category={finding.category} />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${categoryStyle}`}
+                        >
+                          {finding.category}
+                        </span>
+
+                        <span className="text-xs text-slate-500">
+                          {(finding.confidence * 100).toFixed(0)}% confidence
+                        </span>
+                      </div>
+
+                      <h4 className="mt-3 text-lg font-semibold text-white sm:text-xl">
+                        {finding.title}
+                      </h4>
+
+                      <p className="mt-1 truncate text-sm text-slate-400">
+                        {finding.entity}
+                      </p>
+                    </div>
+
+                    <div className="ml-auto flex shrink-0 items-center gap-4">
+                      <div className="text-right">
+                        <p className="text-xs uppercase tracking-wide text-slate-500">
+                          Impact
+                        </p>
+                        <p className="mt-1 text-lg font-bold text-rose-300 sm:text-xl">
+                          -$
+                          {Math.abs(
+                            finding.dollar_impact
+                          ).toLocaleString()}
+                        </p>
+                      </div>
+
+                      {expandedLeak === index ? (
+                        <ChevronUp className="h-5 w-5 text-slate-500" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5 text-slate-500" />
+                      )}
+                    </div>
+                  </button>
+
+                  {expandedLeak === index && (
+                    <LeakCard finding={finding} />
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
