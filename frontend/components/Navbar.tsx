@@ -1,328 +1,424 @@
 "use client";
 
-import { Activity, BarChart3, Sparkles, ChevronDown } from "lucide-react";
+import {
+  Activity,
+  BarChart3,
+  ChevronDown,
+  Sparkles,
+} from "lucide-react";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface NavbarProps {
   hasResults: boolean;
   onReset: () => void;
 }
 
-export default function Navbar({ hasResults, onReset }: NavbarProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [activeSection, setActiveSection] = useState<string>('home');
+const SECTION_IDS = [
+  "home",
+  "dashboard",
+  "features",
+  "upload",
+];
+
+export default function Navbar({
+  hasResults,
+  onReset,
+}: NavbarProps) {
+  const [activeSection, setActiveSection] =
+    useState<string>("home");
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'dashboard', 'features', 'upload'];
-      const scrollPosition = window.scrollY + 150; // Offset for navbar height
+      const scrollPosition = window.scrollY + 150;
 
-      // Check if we're at the top (hero section)
       if (window.scrollY < 100) {
-        setActiveSection('home');
+        setActiveSection("home");
         return;
       }
 
-      // Check each section
-      for (const sectionId of sections) {
+      for (const sectionId of SECTION_IDS) {
         const element = document.getElementById(sectionId);
-        if (element) {
-          const { offsetTop, offsetHeight } = element;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(sectionId);
-            return;
-          }
+
+        if (!element) {
+          continue;
+        }
+
+        const { offsetTop, offsetHeight } = element;
+
+        if (
+          scrollPosition >= offsetTop &&
+          scrollPosition < offsetTop + offsetHeight
+        ) {
+          setActiveSection(sectionId);
+          return;
         }
       }
     };
 
-    // Set initial state
     handleScroll();
 
-    // Add scroll listener
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
-  const handleDashboardClick = () => {
-    if (hasResults) {
-      onReset();
-      setTimeout(() => {
-        scrollToSection('#dashboard');
-      }, 100);
-    } else {
-      scrollToSection('#dashboard');
+  const performScroll = (sectionId: string) => {
+    if (sectionId === "home") {
+      const homeElement = document.getElementById("home");
+
+      if (homeElement) {
+        homeElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      } else {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
+
+      return;
+    }
+
+    const element = document.getElementById(sectionId);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }
   };
 
   const scrollToSection = (sectionId: string) => {
-    if (hasResults && sectionId !== '#home') {
+    const normalizedSectionId =
+      sectionId.replace(/^#/, "") || "home";
+
+    if (hasResults) {
       onReset();
-      setTimeout(() => {
-        const element = document.querySelector(sectionId);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    } else if (sectionId === '#' || sectionId === '#home') {
-      if (hasResults) {
-        onReset();
-        setTimeout(() => {
-          const element = document.querySelector('#home');
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        }, 100);
-      } else {
-        const element = document.querySelector('#home');
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }
-    } else {
-      const element = document.querySelector(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+
+      window.setTimeout(() => {
+        performScroll(normalizedSectionId);
+      }, 150);
+
+      return;
     }
+
+    performScroll(normalizedSectionId);
   };
 
-  const getButtonStyle = (section: string) => {
-    const isActive = activeSection === section;
-    return {
-      base: `px-5 py-2.5 text-[13px] font-${isActive ? 'semibold' : 'medium'} text-${isActive ? 'white' : 'slate-400'} rounded-lg transition-all duration-300`,
-      active: isActive ? {
-        background: 'rgba(124, 58, 237, 0.12)',
-        borderColor: 'rgba(124, 58, 237, 0.35)',
-        boxShadow: '0 0 12px rgba(124,58,237,0.15)',
-      } : {},
-      hover: 'hover:text-white hover:bg-white/5',
-    };
+  const handleDashboardClick = () => {
+    if (hasResults) {
+      const dashboardElement =
+        document.getElementById("dashboard");
+
+      if (dashboardElement) {
+        dashboardElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+        return;
+      }
+    }
+
+    scrollToSection("dashboard");
+  };
+
+  const isActive = (sectionId: string) =>
+    activeSection === sectionId;
+
+  const activeButtonStyle = {
+    background: "rgba(124, 58, 237, 0.12)",
+    borderColor: "rgba(124, 58, 237, 0.35)",
+    boxShadow: "0 0 12px rgba(124,58,237,0.15)",
+  };
+
+  const handleActiveMouseEnter = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    sectionId: string,
+  ) => {
+    if (!isActive(sectionId)) {
+      return;
+    }
+
+    event.currentTarget.style.boxShadow =
+      "0 0 20px rgba(124,58,237,0.4)";
+    event.currentTarget.style.borderColor =
+      "rgba(124,58,237,0.6)";
+  };
+
+  const handleActiveMouseLeave = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    sectionId: string,
+  ) => {
+    if (!isActive(sectionId)) {
+      return;
+    }
+
+    event.currentTarget.style.boxShadow =
+      "0 0 12px rgba(124,58,237,0.15)";
+    event.currentTarget.style.borderColor =
+      "rgba(124,58,237,0.35)";
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b" style={{
-      background: 'rgba(255,255,255,0.05)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      borderColor: 'rgba(124, 58, 237, 0.18)',
-      boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(124,58,237,0.08) inset',
-    }}>
-      <div className="max-w-[1920px] mx-auto px-8 lg:px-12">
-        <div className="flex items-center justify-between h-[72px]">
-          
-          {/* Left: Logo & Brand */}
-          <Link href="/" className="flex items-center gap-4 hover:opacity-90 transition-all duration-300 group">
-            {/* Logo with glow effect */}
-            <div className="relative flex-shrink-0">
+    <header
+      className="sticky top-0 z-50 border-b"
+      style={{
+        background: "rgba(255,255,255,0.05)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderColor: "rgba(124, 58, 237, 0.18)",
+        boxShadow:
+          "0 4px 24px rgba(0, 0, 0, 0.3), " +
+          "0 0 0 0.5px rgba(124,58,237,0.08) inset",
+      }}
+    >
+      <div className="mx-auto max-w-[1920px] px-8 lg:px-12">
+        <div className="flex h-[72px] items-center justify-between">
+          {/* Logo and brand */}
+          <Link
+            href="/"
+            onClick={(event) => {
+              event.preventDefault();
+              scrollToSection("home");
+            }}
+            className="group flex items-center gap-4 transition-all duration-300 hover:opacity-90"
+          >
+            <div className="relative shrink-0">
               <div
-                className="absolute inset-0 rounded-full blur-2xl opacity-30 group-hover:opacity-50 transition-opacity"
-                style={{ background: 'radial-gradient(circle, #A78BFA, #7C3AED)' }}
+                className="absolute inset-0 rounded-full opacity-30 blur-2xl transition-opacity group-hover:opacity-50"
+                style={{
+                  background:
+                    "radial-gradient(circle, #A78BFA, #7C3AED)",
+                }}
               />
+
               <Image
                 src="/logo-leak-logic.png"
                 alt="LeakLogic AI"
                 width={56}
                 height={56}
                 className="relative object-contain drop-shadow-xl"
-                style={{ mixBlendMode: 'screen', width: 56, height: 56 }}
+                style={{
+                  mixBlendMode: "screen",
+                  width: 56,
+                  height: 56,
+                }}
                 priority
               />
             </div>
-            
-            {/* Brand Text */}
+
             <div className="flex flex-col items-start justify-center gap-1">
-              <h1 className="text-[20px] font-bold tracking-tight leading-none bg-gradient-to-r from-[#A78BFA] to-[#67E8F9] bg-clip-text text-transparent">
+              <h1 className="bg-gradient-to-r from-[#A78BFA] to-[#67E8F9] bg-clip-text text-[20px] font-bold leading-none tracking-tight text-transparent">
                 LeakLogic AI
               </h1>
-              <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-semibold leading-none">
+
+              <p className="text-[10px] font-semibold uppercase leading-none tracking-[0.2em] text-slate-400">
                 Profit Intelligence Platform
               </p>
             </div>
           </Link>
 
-          {/* Center: Navigation */}
-          <nav className="hidden lg:flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2">
+          {/* Navigation */}
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 lg:flex">
             <button
-              onClick={() => scrollToSection('#')}
-              className={`px-5 py-2.5 text-[13px] rounded-lg border transition-all duration-300 ${
-                activeSection === 'home' 
-                  ? 'font-semibold text-white' 
-                  : 'font-medium text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
+              type="button"
+              onClick={() => scrollToSection("home")}
+              className={`rounded-lg border px-5 py-2.5 text-[13px] transition-all duration-300 ${
+                isActive("home")
+                  ? "font-semibold text-white"
+                  : "border-transparent font-medium text-slate-400 hover:bg-white/5 hover:text-white"
               }`}
-              style={activeSection === 'home' ? {
-                background: 'rgba(124, 58, 237, 0.12)',
-                borderColor: 'rgba(124, 58, 237, 0.35)',
-                boxShadow: '0 0 12px rgba(124,58,237,0.15)',
-              } : {}}
-              onMouseEnter={e => {
-                if (activeSection === 'home') {
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 20px rgba(124,58,237,0.4)';
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.6)';
-                }
-              }}
-              onMouseLeave={e => {
-                if (activeSection === 'home') {
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 12px rgba(124,58,237,0.15)';
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.35)';
-                }
-              }}
+              style={
+                isActive("home")
+                  ? activeButtonStyle
+                  : undefined
+              }
+              onMouseEnter={(event) =>
+                handleActiveMouseEnter(event, "home")
+              }
+              onMouseLeave={(event) =>
+                handleActiveMouseLeave(event, "home")
+              }
             >
               Home
             </button>
+
             <button
+              type="button"
               onClick={handleDashboardClick}
-              className={`px-5 py-2.5 text-[13px] rounded-lg border transition-all duration-300 ${
-                activeSection === 'dashboard' 
-                  ? 'font-semibold text-white' 
-                  : 'font-medium text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
+              className={`rounded-lg border px-5 py-2.5 text-[13px] transition-all duration-300 ${
+                isActive("dashboard")
+                  ? "font-semibold text-white"
+                  : "border-transparent font-medium text-slate-400 hover:bg-white/5 hover:text-white"
               }`}
-              style={activeSection === 'dashboard' ? {
-                background: 'rgba(124, 58, 237, 0.12)',
-                borderColor: 'rgba(124, 58, 237, 0.35)',
-                boxShadow: '0 0 12px rgba(124,58,237,0.15)',
-              } : {}}
-              onMouseEnter={e => {
-                if (activeSection === 'dashboard') {
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 20px rgba(124,58,237,0.4)';
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.6)';
-                }
-              }}
-              onMouseLeave={e => {
-                if (activeSection === 'dashboard') {
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 12px rgba(124,58,237,0.15)';
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.35)';
-                }
-              }}
+              style={
+                isActive("dashboard")
+                  ? activeButtonStyle
+                  : undefined
+              }
+              onMouseEnter={(event) =>
+                handleActiveMouseEnter(event, "dashboard")
+              }
+              onMouseLeave={(event) =>
+                handleActiveMouseLeave(event, "dashboard")
+              }
             >
               Dashboard
             </button>
+
             <button
-              onClick={() => scrollToSection('#features')}
-              className={`px-5 py-2.5 text-[13px] rounded-lg border transition-all duration-300 ${
-                activeSection === 'features' 
-                  ? 'font-semibold text-white' 
-                  : 'font-medium text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
+              type="button"
+              onClick={() => scrollToSection("features")}
+              className={`rounded-lg border px-5 py-2.5 text-[13px] transition-all duration-300 ${
+                isActive("features")
+                  ? "font-semibold text-white"
+                  : "border-transparent font-medium text-slate-400 hover:bg-white/5 hover:text-white"
               }`}
-              style={activeSection === 'features' ? {
-                background: 'rgba(124, 58, 237, 0.12)',
-                borderColor: 'rgba(124, 58, 237, 0.35)',
-                boxShadow: '0 0 12px rgba(124,58,237,0.15)',
-              } : {}}
-              onMouseEnter={e => {
-                if (activeSection === 'features') {
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 20px rgba(124,58,237,0.4)';
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.6)';
-                }
-              }}
-              onMouseLeave={e => {
-                if (activeSection === 'features') {
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 12px rgba(124,58,237,0.15)';
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.35)';
-                }
-              }}
+              style={
+                isActive("features")
+                  ? activeButtonStyle
+                  : undefined
+              }
+              onMouseEnter={(event) =>
+                handleActiveMouseEnter(event, "features")
+              }
+              onMouseLeave={(event) =>
+                handleActiveMouseLeave(event, "features")
+              }
             >
               Features
             </button>
+
             <button
-              onClick={() => scrollToSection('#upload')}
-              className={`px-5 py-2.5 text-[13px] rounded-lg border transition-all duration-300 ${
-                activeSection === 'upload' 
-                  ? 'font-semibold text-white' 
-                  : 'font-medium text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
+              type="button"
+              onClick={() => scrollToSection("upload")}
+              className={`rounded-lg border px-5 py-2.5 text-[13px] transition-all duration-300 ${
+                isActive("upload")
+                  ? "font-semibold text-white"
+                  : "border-transparent font-medium text-slate-400 hover:bg-white/5 hover:text-white"
               }`}
-              style={activeSection === 'upload' ? {
-                background: 'rgba(124, 58, 237, 0.12)',
-                borderColor: 'rgba(124, 58, 237, 0.35)',
-                boxShadow: '0 0 12px rgba(124,58,237,0.15)',
-              } : {}}
-              onMouseEnter={e => {
-                if (activeSection === 'upload') {
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 20px rgba(124,58,237,0.4)';
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.6)';
-                }
-              }}
-              onMouseLeave={e => {
-                if (activeSection === 'upload') {
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 12px rgba(124,58,237,0.15)';
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.35)';
-                }
-              }}
+              style={
+                isActive("upload")
+                  ? activeButtonStyle
+                  : undefined
+              }
+              onMouseEnter={(event) =>
+                handleActiveMouseEnter(event, "upload")
+              }
+              onMouseLeave={(event) =>
+                handleActiveMouseLeave(event, "upload")
+              }
             >
               Analyze
             </button>
           </nav>
 
-          {/* Right: Status & Actions */}
+          {/* Status and actions */}
           <div className="flex items-center gap-4">
-            
-            {/* System Status */}
-            <div className="hidden xl:flex items-center gap-4 mr-2">
-              {/* Live Indicator */}
-              <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-lg border"
+            <div className="mr-2 hidden items-center gap-4 xl:flex">
+              <div
+                className="flex items-center gap-2.5 rounded-lg border px-3.5 py-2"
                 style={{
-                  background: 'rgba(16,185,129,0.08)',
-                  borderColor: 'rgba(16,185,129,0.28)',
-                  boxShadow: '0 0 10px rgba(16,185,129,0.1)',
-                }}>
+                  background: "rgba(16,185,129,0.08)",
+                  borderColor: "rgba(16,185,129,0.28)",
+                  boxShadow:
+                    "0 0 10px rgba(16,185,129,0.1)",
+                }}
+              >
                 <div className="relative">
-                  <Activity className="w-3.5 h-3.5 text-emerald-400" strokeWidth={2.5} />
-                  <div className="absolute -inset-1 bg-emerald-400/30 rounded-full blur-sm animate-pulse" />
+                  <Activity
+                    className="h-3.5 w-3.5 text-emerald-400"
+                    strokeWidth={2.5}
+                  />
+
+                  <div className="absolute -inset-1 animate-pulse rounded-full bg-emerald-400/30 blur-sm" />
                 </div>
+
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-emerald-400 leading-none">SYSTEM LIVE</span>
-                  <span className="text-[9px] text-emerald-400/50 leading-none mt-0.5">Optimal</span>
+                  <span className="text-[10px] font-bold leading-none text-emerald-400">
+                    SYSTEM LIVE
+                  </span>
+
+                  <span className="mt-0.5 text-[9px] leading-none text-emerald-400/50">
+                    Optimal
+                  </span>
                 </div>
               </div>
 
-              {/* AI Badge */}
-              <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-lg border relative overflow-hidden" style={{
-                background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%)',
-                borderColor: 'rgba(124, 58, 237, 0.3)',
-                boxShadow: '0 0 10px rgba(124,58,237,0.12)',
-              }}>
-                <Sparkles className="w-3.5 h-3.5 text-violet-400" strokeWidth={2.5} />
-                <span className="text-[11px] font-bold text-violet-400 tracking-wide">AI POWERED</span>
+              <div
+                className="relative flex items-center gap-2.5 overflow-hidden rounded-lg border px-3.5 py-2"
+                style={{
+                  background:
+                    "linear-gradient(135deg, " +
+                    "rgba(124, 58, 237, 0.08) 0%, " +
+                    "rgba(6, 182, 212, 0.08) 100%)",
+                  borderColor: "rgba(124, 58, 237, 0.3)",
+                  boxShadow:
+                    "0 0 10px rgba(124,58,237,0.12)",
+                }}
+              >
+                <Sparkles
+                  className="h-3.5 w-3.5 text-violet-400"
+                  strokeWidth={2.5}
+                />
+
+                <span className="text-[11px] font-bold tracking-wide text-violet-400">
+                  AI POWERED
+                </span>
               </div>
             </div>
 
-            {/* CTA Button */}
             {hasResults ? (
               <button
+                type="button"
                 onClick={onReset}
-                className="relative px-6 py-2.5 text-[13px] font-bold text-white rounded-lg transition-all duration-300 hover:scale-[1.02] overflow-hidden btn-liquid-highlight"
+                className="btn-liquid-highlight relative overflow-hidden rounded-lg px-6 py-2.5 text-[13px] font-bold text-white transition-all duration-300 hover:scale-[1.02]"
                 style={{
-                  background: 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 50%, #06B6D4 100%)',
-                  boxShadow: '0 0 24px rgba(124,58,237,0.45)',
+                  background:
+                    "linear-gradient(135deg, " +
+                    "#7C3AED 0%, #4F46E5 50%, #06B6D4 100%)",
+                  boxShadow:
+                    "0 0 24px rgba(124,58,237,0.45)",
                 }}
               >
-                <div className="absolute inset-0 bg-white/15 translate-y-full hover:translate-y-0 transition-transform duration-300" />
+                <div className="absolute inset-0 translate-y-full bg-white/15 transition-transform duration-300 hover:translate-y-0" />
+
                 <span className="relative flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4" strokeWidth={2.5} />
+                  <BarChart3
+                    className="h-4 w-4"
+                    strokeWidth={2.5}
+                  />
                   New Analysis
                 </span>
               </button>
             ) : (
               <button
-                onClick={() => scrollToSection('#upload')}
-                className="relative px-6 py-2.5 text-[13px] font-bold text-white rounded-lg transition-all duration-300 hover:scale-[1.02] overflow-hidden btn-liquid-highlight"
+                type="button"
+                onClick={() => scrollToSection("upload")}
+                className="btn-liquid-highlight relative overflow-hidden rounded-lg px-6 py-2.5 text-[13px] font-bold text-white transition-all duration-300 hover:scale-[1.02]"
                 style={{
-                  background: 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 50%, #06B6D4 100%)',
-                  boxShadow: '0 0 24px rgba(124,58,237,0.45)',
+                  background:
+                    "linear-gradient(135deg, " +
+                    "#7C3AED 0%, #4F46E5 50%, #06B6D4 100%)",
+                  boxShadow:
+                    "0 0 24px rgba(124,58,237,0.45)",
                 }}
               >
-                <div className="absolute inset-0 bg-white/15 translate-y-full hover:translate-y-0 transition-transform duration-300" />
+                <div className="absolute inset-0 translate-y-full bg-white/15 transition-transform duration-300 hover:translate-y-0" />
+
                 <span className="relative flex items-center gap-2">
                   Get Started
-                  <ChevronDown className="w-3.5 h-3.5" strokeWidth={3} />
+                  <ChevronDown
+                    className="h-3.5 w-3.5"
+                    strokeWidth={3}
+                  />
                 </span>
               </button>
             )}
