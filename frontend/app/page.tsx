@@ -30,7 +30,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: '#001031' }}>
+    <div className="min-h-screen relative bg-transparent">
+
+      {/* Ambient floating orbs */}
+      <div className="orb orb-violet" />
+      <div className="orb orb-cyan" />
+      <div className="orb orb-mid" />
+
       {/* Navbar */}
       <Navbar hasResults={!!analysisResult} onReset={handleReset} />
 
@@ -64,12 +70,12 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="mt-16 border-t" style={{
-        background: 'rgba(15, 15, 16, 0.95)',
-        borderColor: 'rgba(39, 39, 42, 0.5)',
+        background: 'rgba(255,255,255,0.03)',
+        borderColor: 'rgba(124, 58, 237, 0.15)',
       }}>
         <div className="px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-center text-sm text-slate-500">
-            Built for AMD Developer Hackathon: ACT II - Unicorn Track
+          <p className="text-center text-sm text-slate-500 font-mono tracking-wider">
+            Built for AMD Developer Hackathon: ACT II — Unicorn Track
           </p>
         </div>
       </footer>

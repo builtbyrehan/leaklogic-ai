@@ -58,9 +58,9 @@ export default function AnalyticsCharts() {
       {/* Revenue Trajectory Chart */}
       <div className="rounded-2xl p-6 relative overflow-hidden"
         style={{
-          background: 'rgba(24, 24, 27, 0.8)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(39, 39, 42, 0.5)',
+          background: 'rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.10)',
         }}
       >
         <div className="flex items-start justify-between mb-6">
@@ -91,9 +91,9 @@ export default function AnalyticsCharts() {
       {/* Vertical Split Donut Chart */}
       <div className="rounded-2xl p-6 relative overflow-hidden"
         style={{
-          background: 'rgba(24, 24, 27, 0.8)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(39, 39, 42, 0.5)',
+          background: 'rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.10)',
         }}
       >
         <div className="mb-6">
@@ -127,9 +127,9 @@ export default function AnalyticsCharts() {
       {/* Real-time Users Card */}
       <div className="rounded-2xl p-6 relative overflow-hidden"
         style={{
-          background: 'rgba(24, 24, 27, 0.8)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(39, 39, 42, 0.5)',
+          background: 'rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.10)',
         }}
       >
         <div className="flex items-start justify-between mb-4">
@@ -161,9 +161,9 @@ export default function AnalyticsCharts() {
       {/* Global Reach Card */}
       <div className="rounded-2xl p-6 relative overflow-hidden"
         style={{
-          background: 'rgba(24, 24, 27, 0.8)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(39, 39, 42, 0.5)',
+          background: 'rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.10)',
         }}
       >
         <div className="flex items-start justify-between mb-4">
@@ -185,9 +185,9 @@ export default function AnalyticsCharts() {
       {/* Avg Session Card */}
       <div className="rounded-2xl p-6 relative overflow-hidden lg:col-span-2"
         style={{
-          background: 'rgba(24, 24, 27, 0.8)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(39, 39, 42, 0.5)',
+          background: 'rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.10)',
         }}
       >
         <div className="flex items-center justify-between">

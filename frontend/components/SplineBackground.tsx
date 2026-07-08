@@ -1,34 +1,29 @@
-﻿"use client";
+"use client";
 
-import { Suspense } from "react";
-import Spline from "@splinetool/react-spline";
+import Image from "next/image";
 
 export default function SplineBackground() {
   return (
     <div 
-      className="absolute inset-0 w-full h-full overflow-hidden"
+      className="absolute inset-0 w-full h-full overflow-hidden select-none pointer-events-none"
       style={{
         zIndex: 0,
-        backgroundColor: '#001031',
+        backgroundColor: '#000000',
       }}
     >
-      <Suspense
-        fallback={
-          <div
-            className="h-full w-full animate-pulse"
-            style={{ backgroundColor: "#001031" }}
-          />
-        }
-      >
-        <Spline
-          scene="https://prod.spline.design/SxhOPKt5L7pPqxaK/scene.splinecode"
-          style={{
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none',
-          }}
-        />
-      </Suspense>
+      <Image
+        src="/spline-bg.png"
+        alt="Background Aesthetic"
+        fill
+        priority
+        className="object-cover opacity-90 blur-[10px]"
+      />
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7))'
+        }}
+      />
     </div>
   );
 }

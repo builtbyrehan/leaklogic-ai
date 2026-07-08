@@ -84,15 +84,26 @@ const config: Config = {
         'card': '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
         'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3)',
       },
+      fontFamily: {
+        sans:  ['var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono:  ['var(--font-jetbrains)', 'ui-monospace', 'monospace'],
+      },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
+        'fade-in-up': 'fadeInUp 0.5s ease-out',
         'slide-up': 'slideUp 0.5s ease-out',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'float': 'float 6s ease-in-out infinite',
         'glow': 'glow 2s ease-in-out infinite alternate',
         'rainbow': 'rainbow 8s ease-in-out infinite',
+        'glass-shimmer': 'glassShimmer 7s ease-in-out infinite',
+        'color-cycle': 'colorCycle 2s linear infinite',
       },
       keyframes: {
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
