@@ -7,12 +7,15 @@ export interface Finding {
   confidence: number;
   time_window: string;
   evidence: string[];
-  likely_cause: string;
+  likely_cause: string | null;
   suggested_action: string;
 }
 
 export interface ChartData {
-  revenue_over_time: Array<{ month: string; value: number }>;
+  revenue_over_time: Array<{
+    month: string;
+    value: number;
+  }>;
   records_by_source: Record<string, number>;
   date_range: string;
 }
@@ -22,6 +25,7 @@ export interface AnalysisResult {
   total_estimated_leak: number;
   findings: Finding[];
   executive_summary: string;
+  narrative_source: "openrouter" | "fallback";
   amd_usage_note: string;
   chart_data?: ChartData;
 }
