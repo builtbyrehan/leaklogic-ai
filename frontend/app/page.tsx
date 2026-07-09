@@ -78,9 +78,9 @@ export default function Home() {
               {/* Quick Actions */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                 {/* New Analysis Card */}
-                <a href="#upload">
-                  <div 
-                    className="group relative overflow-hidden rounded-2xl p-6 border cursor-pointer transition-all duration-300 hover:scale-105"
+                <a href="#upload" className="block">
+                  <div
+                    className="group relative overflow-hidden rounded-2xl p-6 border cursor-pointer transition-all duration-300 hover:scale-105 h-full"
                     style={{
                       background: 'rgba(124, 58, 237, 0.12)',
                       backdropFilter: 'blur(16px)',
@@ -107,9 +107,9 @@ export default function Home() {
                 </a>
 
                 {/* Sample Data Card */}
-                <button onClick={handleSampleDataClick}>
+                <button onClick={handleSampleDataClick} className="block w-full text-left p-0 border-0 bg-transparent cursor-pointer">
                   <div 
-                    className="group relative overflow-hidden rounded-2xl p-6 border cursor-pointer transition-all duration-300 hover:scale-105"
+                    className="group relative overflow-hidden rounded-2xl p-6 border cursor-pointer transition-all duration-300 hover:scale-105 h-full"
                     style={{
                       background: 'rgba(6, 182, 212, 0.12)',
                       backdropFilter: 'blur(16px)',
@@ -136,9 +136,9 @@ export default function Home() {
                 </button>
 
                 {/* Documentation Card */}
-                <Link href="/docs">
+                <Link href="/docs" className="block">
                   <div 
-                    className="group relative overflow-hidden rounded-2xl p-6 border cursor-pointer transition-all duration-300 hover:scale-105"
+                    className="group relative overflow-hidden rounded-2xl p-6 border cursor-pointer transition-all duration-300 hover:scale-105 h-full"
                     style={{
                       background: 'rgba(167, 139, 250, 0.12)',
                       backdropFilter: 'blur(16px)',
