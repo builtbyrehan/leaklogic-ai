@@ -315,7 +315,7 @@ export default function Home() {
             borderColor: 'rgba(255,255,255,0.1)',
           }}>
             <p className="text-sm text-slate-300 font-mono">
-              © 2024 LeakLogic AI. Built for AMD Developer Hackathon: ACT II
+              © LeakLogic AI. Built for AMD Developer Hackathon: ACT II
             </p>
             <div className="flex items-center gap-2 text-xs" style={{
               background: 'rgba(124, 58, 237, 0.1)',
