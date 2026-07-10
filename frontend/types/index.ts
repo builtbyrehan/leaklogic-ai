@@ -20,12 +20,17 @@ export interface ChartData {
   date_range: string;
 }
 
+export type NarrativeSource =
+  | "fireworks"
+  | "openrouter"
+  | "fallback";
+
 export interface AnalysisResult {
   status: string;
   total_estimated_leak: number;
   findings: Finding[];
   executive_summary: string;
-  narrative_source: "openrouter" | "fallback";
+  narrative_source: NarrativeSource;
   amd_usage_note: string;
   chart_data?: ChartData;
 }

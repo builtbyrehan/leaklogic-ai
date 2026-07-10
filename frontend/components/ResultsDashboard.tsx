@@ -154,30 +154,55 @@ function NarrativeBadge({
 }: {
   narrativeSource: AnalysisResult["narrative_source"];
 }) {
-  const isAiNarrative = narrativeSource === "openrouter";
+  const badgeConfiguration = {
+    fireworks: {
+      label: "FIREWORKS AI NARRATIVE",
+      background: "rgba(249,115,22,0.10)",
+      borderColor: "rgba(249,115,22,0.32)",
+      color: "#FDBA74",
+      iconColor: "#FB923C",
+      icon: <Sparkles className="h-3.5 w-3.5" />,
+    },
+    openrouter: {
+      label: "NEMOTRON AI NARRATIVE",
+      background: "rgba(139,92,246,0.10)",
+      borderColor: "rgba(139,92,246,0.30)",
+      color: "#C4B5FD",
+      iconColor: "#A78BFA",
+      icon: <Sparkles className="h-3.5 w-3.5" />,
+    },
+    fallback: {
+      label: "DETERMINISTIC FALLBACK",
+      background: "rgba(245,158,11,0.10)",
+      borderColor: "rgba(245,158,11,0.30)",
+      color: "#FCD34D",
+      iconColor: "#F59E0B",
+      icon: <ShieldCheck className="h-3.5 w-3.5" />,
+    },
+  } as const;
+
+  const configuration =
+    badgeConfiguration[narrativeSource] ??
+    badgeConfiguration.fallback;
 
   return (
     <div
       className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-mono tracking-widest"
       style={{
-        background: isAiNarrative
-          ? "rgba(139,92,246,0.10)"
-          : "rgba(245,158,11,0.10)",
-        borderColor: isAiNarrative
-          ? "rgba(139,92,246,0.30)"
-          : "rgba(245,158,11,0.30)",
-        color: isAiNarrative ? "#C4B5FD" : "#FCD34D",
+        background: configuration.background,
+        borderColor: configuration.borderColor,
+        color: configuration.color,
       }}
     >
-      {isAiNarrative ? (
-        <Sparkles className="h-3.5 w-3.5" />
-      ) : (
-        <ShieldCheck className="h-3.5 w-3.5" />
-      )}
+      <span
+        style={{
+          color: configuration.iconColor,
+        }}
+      >
+        {configuration.icon}
+      </span>
 
-      {isAiNarrative
-        ? "NEMOTRON AI NARRATIVE"
-        : "DETERMINISTIC FALLBACK"}
+      {configuration.label}
     </div>
   );
 }
